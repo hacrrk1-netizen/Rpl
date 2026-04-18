@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Withdrawal - Z2DWIN</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; background: #ffffff; margin: 0; color: #333; padding-bottom: 50px; }
+
+        /* Top Navigation Bar */
+        .nav-bar {
+            display: flex; align-items: center; padding: 15px;
+            background: #fff; border-bottom: 1px solid #eee;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .back-btn {
+            background: #f0f0f0; border: none; width: 35px; height: 35px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; color: #000; font-size: 18px; font-weight: bold;
+        }
+        .nav-title { flex: 1; text-align: center; font-weight: bold; font-size: 16px; margin-right: 35px; }
+
+        /* Header */
+        .top-header { background: #f8f9fa; padding: 25px 20px; text-align: center; border-bottom: 1px solid #eee; }
+        .bal-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        .bal-amount { font-size: 34px; font-weight: 800; color: #000; margin: 5px 0; }
+        .withdraw-info { font-size: 12px; color: #d32f2f; font-weight: 600; }
+
+        .container { padding: 20px; }
+        .section-title { font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #444; text-transform: uppercase; }
+
+        /* UPI Card */
+        .upi-card { 
+            width: 50%; border-radius: 12px; border: 1.5px solid #eee; 
+            overflow: hidden; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .upi-card:active { transform: scale(0.96); }
+        .upi-card img { width: 100%; display: block; }
+
+        /* Form */
+        #withdraw-form { display: none; margin-top: 30px; border-top: 1px solid #f0f0f0; padding-top: 25px; }
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; font-size: 11px; margin-bottom: 6px; color: #777; font-weight: bold; }
+        .input-group input { 
+            width: 100%; padding: 14px; border: 1.5px solid #eee; 
+            border-radius: 10px; font-size: 14px; outline: none; background: #fafafa; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #000; background: #fff; }
+
+        /* Custom Modal */
+        #custom-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-box {
+            width: 85%; max-width: 320px; background: #fff; border-radius: 20px;
+            padding: 25px; text-align: center; animation: popUp 0.3s ease-out;
+        }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal-icon { font-size: 40px; color: #ff5252; margin-bottom: 15px; }
+        .modal-title { font-weight: bold; font-size: 18px; color: #000; margin-bottom: 10px; }
+        .modal-text { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 20px; }
+        .modal-btn { 
+            width: 100%; padding: 12px; background: #000; color: #fff; 
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
+        }
+
+        /* Loader */
+        #loader {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 3000; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+        .spinner {
+            width: 45px; height: 45px; border: 4px solid #f3f3f3;
+            border-top: 4px solid #000; border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .btn-submit { 
+            width: 100%; padding: 16px; background: #000; color: #fff; 
+            border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px;
+        }
+        .coming-soon { text-align: center; padding: 40px; color: #ddd; font-size: 11px; font-weight: bold; letter-spacing: 1.5px; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <a href="index2.html" class="back-btn">‹</a>
+        <div class="nav-title">Withdrawal Funds</div>
+    </div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-weight:bold; font-size:13px;">VERIFYING REQUEST...</p>
+    </div>
+
+    <div id="custom-modal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-title" id="m-title">Failed</div>
+            <div class="modal-text" id="m-text">Your withdrawal balance is ₹0.00.</div>
+            <button class="modal-btn" onclick="closeModal()">TRY AGAIN</button>
+        </div>
+    </div>
+
+    <div class="top-header">
+        <div class="bal-label">Available for Withdrawal</div>
+        <div class="bal-amount">₹<span id="draw-bal">0.00</span></div>
+        <div class="withdraw-info">Min. Withdrawal: ₹4000</div>
+    </div>
+
+    <div class="container">
+        <div class="section-title">Withdrawal Method</div>
+        <div class="upi-card" onclick="showForm()">
+            <img src="image6.png" alt="UPI">
+        </div>
+
+        <div id="withdraw-form">
+            <div class="section-title">Enter Details</div>
+            
+            <div class="input-group">
+                <label>Amount (Min ₹4000)</label>
+                <input type="number" id="amt" placeholder="Enter amount">
+            </div>
+
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="fname" placeholder="Full name as per bank">
+            </div>
+
+            <div class="input-group">
+                <label>UPI ID</label>
+                <input type="text" id="upiid" placeholder="yourname@upi">
+            </div>
+
+            <div class="input-group">
+                <label>Transaction Password</label>
+                <input type="password" id="pass" placeholder="Enter Password">
+            </div>
+
+            <button class="btn-submit" onclick="handleWithdraw()">WITHDRAW NOW</button>
+        </div>
+
+        <div class="coming-soon">MORE OPTIONS COMING SOON...</div>
+    </div>
+
+<script>
+    function showForm() {
+        const form = document.getElementById('withdraw-form');
+        form.style.display = 'block';
+        setTimeout(() => {
+            window.scrollTo({ top: form.offsetTop - 70, behavior: 'smooth' });
+        }, 100);
+    }
+
+    function showModal(title, text) {
+        document.getElementById('m-title').innerText = title;
+        document.getElementById('m-text').innerText = text;
+        document.getElementById('custom-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('custom-modal').style.display = 'none';
+    }
+
+    function handleWithdraw() {
+        const amount = document.getElementById('amt').value;
+        const loader = document.getElementById('loader');
+
+        if (!amount || amount < 4000) {
+            showModal("Invalid Amount", "Minimum withdrawal is ₹4000.");
+            return;
+        }
+
+        loader.style.display = 'flex';
+        setTimeout(() => {
+            loader.style.display = 'none';
+            showModal("Withdrawal Failed", "Insufficient Balance! Your withdrawal balance is ₹0.00. Add funds to proceed.");
+        }, 3000);
+    }
+
+    window.onload = function() {
+        document.getElementById('draw-bal').innerText = "0.00";
+    };
+</script>
+
+</body>
+</html>

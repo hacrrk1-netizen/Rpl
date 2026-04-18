@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RPL - Play More Earn More</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding-bottom: 20px; overflow-x: hidden; }
+
+        /* Top Navigation */
+        .top-nav { 
+            background: #111; padding: 12px 15px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; 
+        }
+        .menu-icon { font-size: 24px; cursor: pointer; flex: 0 0 30px; }
+        .tagline { 
+            font-size: 9px; color: #ff9800; font-weight: bold; 
+            flex: 1; text-align: center; letter-spacing: 0.5px; margin: 0 10px;
+        }
+        .balance-box { 
+            background: #222; padding: 6px 12px; border-radius: 20px; 
+            font-weight: bold; border: 1px solid #444; color: #4caf50; font-size: 13px;
+        }
+
+        /* Sidebar */
+        .sidebar { position: fixed; left: -250px; top: 0; width: 250px; height: 100%; background: #111; z-index: 2000; transition: 0.3s; padding-top: 60px; border-right: 1px solid #333; }
+        .sidebar.active { left: 0; }
+        .sidebar a { display: block; padding: 15px 25px; color: #eee; text-decoration: none; border-bottom: 1px solid #222; font-size: 15px; }
+
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(3px); }
+
+        /* Game Grid */
+        .section-title { padding: 25px 15px 10px; font-weight: bold; font-size: 16px; color: #fff; letter-spacing: 1px; }
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .game-card { border-radius: 12px; overflow: hidden; position: relative; height: 160px; cursor: pointer; border: 1px solid #222; background: #111; }
+        .game-card img { width: 100%; height: 100%; object-fit: cover; }
+        .game-label { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); color: #fff; padding: 12px 5px 8px; text-align: center; font-weight: bold; font-size: 11px; }
+
+        /* Professional Popups */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #1a1a1a; border-radius: 20px; padding: 25px; z-index: 3000; border: 1px solid #333; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .error-modal { border-top: 4px solid #ff5252; }
+        .btn-action { background: #ff9800; color: #000; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        
+        /* Loader */
+        #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #222; border-top: 4px solid #ff9800; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .scroll-spacer { height: 300px; width: 100%; }
+        .coming-soon { text-align: center; padding: 20px; color: #333; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-weight:bold; font-size:12px; color:#ff9800;">CONNECTING...</p>
+    </div>
+
+    <div class="top-nav">
+        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <div class="tagline">RPL PLAY MORE EARN MORE...</div>
+        <div class="balance-box">₹<span id="main-balance">249.00</span></div>
+    </div>
+
+    <div class="sidebar" id="side-menu">
+        <a href="index2.html">🏠 Home</a>
+        <a href="deposit.html">💳 Deposit</a>
+        <a href="withdrawal.html">🏧 Withdrawal</a>
+        <a href="my.html">📜 My Bets</a>
+        <a href="#" onclick="showTerms()">📑 Terms & Conditions</a>
+    </div>
+
+    <div class="section-title">🏆 CRICKET PREDICTOR</div>
+    <div class="game-grid">
+        <div class="game-card" onclick="loadGame('IPL 2026')">
+            <img src="image2.png" alt="IPL">
+            <div class="game-label">IPL T20 LOBBY</div>
+        </div>
+        <div class="game-card" onclick="loadGame('ODI SERIES')">
+            <img src="image3.png" alt="ODI">
+            <div class="game-label">ODI WORLD SERIES</div>
+        </div>
+        <div class="game-card" onclick="loadGame('TEST MATCH')">
+            <img src="image4.png" alt="TEST">
+            <div class="game-label">TEST CHAMPIONSHIP</div>
+        </div>
+        <div class="game-card" onclick="loadGame('T20 WC')">
+            <img src="image5.png" alt="WC">
+            <div class="game-label">T20 WORLD CUP</div>
+        </div>
+    </div>
+
+    <div class="coming-soon">--- MORE GAMES COMING SOON ---</div>
+    <div class="scroll-spacer"></div>
+
+    <div class="modal error-modal" id="errorModal">
+        <h3 style="color:#ff5252; margin-top:0;">ACCESS DENIED</h3>
+        <p id="errorMsg" style="color:#ccc; font-size:14px;"></p>
+        <button class="btn-action" onclick="window.location.href='deposit.html'">DEPOSIT NOW</button>
+        <br>
+        <button onclick="closeAll()" style="background:none; border:none; color:#555; margin-top:10px; font-size:12px;">CLOSE</button>
+    </div>
+
+    <div class="modal" id="bonusModal" style="border-color: #ff9800;">
+        <h2 style="color:#ff9800; margin:0;">CONGRATS!</h2>
+        <p>Your account is credited with:</p>
+        <div style="font-size:28px; color:#4caf50; font-weight:900; margin:10px 0;">₹249.00</div>
+        <button class="btn-action" onclick="claimBonus()">CLAIM NOW</button>
+    </div>
+
+    <div class="modal" id="termsModal">
+        <h3 style="color:#fff; margin-top:0;">Terms & Conditions</h3>
+        <p style="text-align:left; font-size:12px; color:#aaa;">1. 18+ Only.<br>2. Responsible gaming.<br>3. Min Deposit ₹4000.<br>4. Min Withdraw ₹500.</p>
+        <button class="btn-action" style="background:#333; color:#fff;" onclick="closeAll()">BACK</button>
+    </div>
+
+<script>
+    function toggleMenu() {
+        document.getElementById('side-menu').classList.toggle('active');
+        document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('active') ? 'block' : 'none';
+    }
+
+    function closeAll() {
+        document.getElementById('side-menu').classList.remove('active');
+        document.getElementById('errorModal').style.display = 'none';
+        document.getElementById('termsModal').style.display = 'none';
+        document.getElementById('bonusModal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function showTerms() {
+        closeAll();
+        document.getElementById('termsModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function loadGame(name) {
+        document.getElementById('loader-overlay').style.display = 'flex';
+        setTimeout(() => {
+            document.getElementById('loader-overlay').style.display = 'none';
+            document.getElementById('errorMsg').innerText = `First Deposit of ₹4,000 required to enter ${name}`;
+            document.getElementById('errorModal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }, 1200);
+    }
+
+    window.onload = function() {
+        if (!localStorage.getItem('z2d_claimed')) {
+            setTimeout(() => { 
+                document.getElementById('bonusModal').style.display = 'block'; 
+                document.getElementById('overlay').style.display = 'block';
+            }, 800);
+        }
+    };
+
+    function claimBonus() {
+        closeAll();
+        localStorage.setItem('z2d_claimed', 'true');
+    }
+</script>
+</body>
+</html>
